@@ -1,4 +1,4 @@
-var pivot = require('./lib/pivot').attach();
+var pivot = require('./index').attach();
 
 var data = [{
     name: 'John',
