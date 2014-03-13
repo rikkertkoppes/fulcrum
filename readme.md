@@ -3,7 +3,7 @@ Array Pivot
 
 A utility to generate pivot tables from an array of objects:
 
-	var pivot = require('pivot');
+	var pivot = require('fulcrum');
 
 	var data = [{
 		name: 'John',
@@ -76,7 +76,7 @@ Convenience attachments to Array.prototype
 
 If you wish, you can attach a convenience method to Array.prototype:
 
-	var pivot = require('pivot').attach();
+	var pivot = require('fulcrum').attach();
 	var res = data.pivot('name','coin',pivot.sum('number'));
 
 It can also be detached:
