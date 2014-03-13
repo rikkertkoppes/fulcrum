@@ -1,4 +1,4 @@
-var pivot = function(array,rows,cols,cells) {
+var pivot = function(array,rows,cols,cells,addTotal) {
 
     //row bins
     var r = {};
@@ -6,15 +6,17 @@ var pivot = function(array,rows,cols,cells) {
     array.forEach(function(row) {
         if (!r[row[rows]]) {
             r[row[rows]] = [];
+            r[row[rows]].total = 0;
         }
         r[row[rows]].push(row);
         if (!c[row[cols]]) {
             c[row[cols]] = [];
+            c[row[cols]].total = 0;
         }
         c[row[cols]].push(row);
     });
 
-    return Object.keys(r).map(function(key) {
+    var res = Object.keys(r).map(function(key) {
         var ret = {};
         ret[rows] = key;
         Object.keys(c).forEach(function(col) {
@@ -26,18 +28,38 @@ var pivot = function(array,rows,cols,cells) {
             if (cells) {
                 //reduced by the given function
                 ret[col] = ret[col].reduce(cells.callback,cells.initialValue);
+                //store running sums
+                c[col].total += ret[col];
+                r[key].total += ret[col];
             }
         });
+        if (addTotal) {
+            ret.total = r[key].total;
+        }
         return ret;
     });
+
+    if (addTotal) {
+        var total = {};
+        total[rows] = 'Total';
+        total.total = 0;
+        Object.keys(c).forEach(function(col) {
+            total[col] = c[col].total;
+            total.total += c[col].total;
+        });
+
+        res.push(total);
+    }
+
+    return res;
 };
 
 //attach and detach to array prototype
 var orig;
 pivot.attach = function() {
     orig = Array.prototype.pivot;
-    Array.prototype.pivot = function(rows,cols,cells) {
-        return pivot(this,rows,cols,cells);
+    Array.prototype.pivot = function(rows,cols,cells,addTotal) {
+        return pivot(this,rows,cols,cells,addTotal);
     };
     return pivot;
 };
